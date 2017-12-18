@@ -308,7 +308,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 151 (last added: transform2d_param)
+// LayerParameter next available layer-specific ID: 152 (last added: duplicate_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -372,6 +372,7 @@ message LayerParameter {
   optional DeconvTransParameter deconv_trans_param = 149;
   optional DropoutParameter dropout_param = 108;
   optional DummyDataParameter dummy_data_param = 109;
+  optional DuplicateParameter duplicate_param = 151;
   optional EltwiseParameter eltwise_param = 110;
   optional ELUParameter elu_param = 140;
   optional EmbedParameter embed_param = 137;
@@ -701,6 +702,10 @@ message DummyDataParameter {
   repeated uint32 channels = 3;
   repeated uint32 height = 4;
   repeated uint32 width = 5;
+}
+
+message DuplicateParameter {
+  optional uint32 duplicates = 1;
 }
 
 message EltwiseParameter {

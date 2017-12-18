@@ -26,7 +26,7 @@ void Transform2DLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
                                           const vector<Blob<Dtype>*>& top) {
   const Dtype* bottom_data = bottom[0]->cpu_data();
   Dtype* top_data = top[0]->mutable_cpu_data();
-  for (int index = 0; index < bottom[0]->num(); ++index) {
+  for (int index = 0; index < bottom[0]->count(); ++index) {
     int num = index;
     const int w = num % bottom[0]->shape(3);
     num = num / bottom[0]->shape(3);
@@ -53,7 +53,7 @@ void Transform2DLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                            const vector<Blob<Dtype>*>& bottom) {
   Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
   const Dtype* top_diff = top[0]->cpu_diff();
-  for (int index = 0; index < bottom[0]->num(); ++index) {
+  for (int index = 0; index < bottom[0]->count(); ++index) {
     int num = index;
     const int w = num % bottom[0]->shape(3);
     num = num / bottom[0]->shape(3);
