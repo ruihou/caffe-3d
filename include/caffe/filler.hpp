@@ -148,7 +148,10 @@ class XavierFiller : public Filler<Dtype> {
   virtual void Fill(Blob<Dtype>* blob) {
     CHECK(blob->count());
     int fan_in = blob->count() / blob->shape(0);
-    int fan_out = blob->count() / blob->shape(1);
+    // Compatibility with ND blobs
+    int fan_out = blob->num_axes() > 1 ?
+                  blob->count() / blob->shape(1) :
+                  blob->count();
     Dtype n = fan_in;  // default to fan_in
     if (this->filler_param_.variance_norm() ==
         FillerParameter_VarianceNorm_AVERAGE) {
@@ -190,7 +193,10 @@ class MSRAFiller : public Filler<Dtype> {
   virtual void Fill(Blob<Dtype>* blob) {
     CHECK(blob->count());
     int fan_in = blob->count() / blob->shape(0);
-    int fan_out = blob->count() / blob->shape(1);
+    // Compatibility with ND blobs
+    int fan_out = blob->num_axes() > 1 ?
+                  blob->count() / blob->shape(1) :
+                  blob->count();
     Dtype n = fan_in;  // default to fan_in
     if (this->filler_param_.variance_norm() ==
         FillerParameter_VarianceNorm_AVERAGE) {
@@ -250,10 +256,10 @@ class BilinearFiller : public Filler<Dtype> {
     CHECK_EQ(blob->width(), blob->height()) << "Filter must be square";
     Dtype* data = blob->mutable_cpu_data();
     int f = ceil(blob->width() / 2.);
-    float c = (2 * f - 1 - f % 2) / (2. * f);
+    Dtype c = (blob->width() - 1) / (2. * f);
     for (int i = 0; i < blob->count(); ++i) {
-      float x = i % blob->width();
-      float y = (i / blob->width()) % blob->height();
+      Dtype x = i % blob->width();
+      Dtype y = (i / blob->width()) % blob->height();
       data[i] = (1 - fabs(x / f - c)) * (1 - fabs(y / f - c));
     }
     CHECK_EQ(this->filler_param_.sparse(), -1)

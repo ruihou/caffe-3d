@@ -22,7 +22,7 @@ void CuDNNReLULayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   ReLULayer<Dtype>::Reshape(bottom, top);
   cudnn::setTensorNdDesc<Dtype>(&bottom_desc_, bottom[0]->shape());
-  cudnn::setTensorNdDesc<Dtype>(&top_desc_, top[0]->shape());
+  cudnn::setTensorNdDesc<Dtype>(&top_desc_, bottom[0]->shape());
 }
 
 template <typename Dtype>

@@ -62,9 +62,9 @@ void CuDNNConvolutionLayer<Dtype>::LayerSetUp(
   std::vector<int> kernel_shape;
   kernel_shape.push_back(this->num_output_ / this->group_);
   kernel_shape.push_back(this->channels_ / this->group_);
-  for (unsigned int i = 0; i < this->num_spatial_axes_; ++i)
+  for (unsigned int i = 0; i < this->num_spatial_axes_; ++i) {
     kernel_shape.push_back(this->kernel_shape_.cpu_data()[i]);
-
+  }
   cudnn::createNdFilterDesc<Dtype>(&filter_desc_, kernel_shape);
 
   // Create tensor descriptor(s) for data and corresponding convolution(s).
@@ -92,7 +92,6 @@ template <typename Dtype>
 void CuDNNConvolutionLayer<Dtype>::Reshape(
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   ConvolutionLayer<Dtype>::Reshape(bottom, top);
-
   bottom_offset_ = this->bottom_dim_ / this->group_;
   top_offset_ = this->top_dim_ / this->group_;
 
@@ -116,18 +115,17 @@ void CuDNNConvolutionLayer<Dtype>::Reshape(
     pad.push_back(this->pad_.cpu_data()[i]);
     stride.push_back(this->stride_.cpu_data()[i]);
   }
-
   // Specify workspace limit for kernels directly until we have a
-  // planning strategy and a rewrite of Caffe's GPU memory management
+  // planning strategy and a rewrite of Caffe's GPU memory mangagement
   size_t workspace_limit_bytes = 8*1024*1024;
 
   for (int i = 0; i < bottom.size(); i++) {
     cudnn::setTensorNdDesc<Dtype>(&bottom_descs_[i],
-        bottom_tensor_shape, bottom_tensor_stride);
+                                  bottom_tensor_shape, bottom_tensor_stride);
     cudnn::setTensorNdDesc<Dtype>(&top_descs_[i],
-        top_tensor_shape, top_tensor_stride);
+                                  top_tensor_shape, top_tensor_stride);
     cudnn::setNdConvolutionDesc<Dtype>(&conv_descs_[i], bottom_descs_[i],
-        filter_desc_, pad, stride);
+                                       filter_desc_, pad, stride);
 
     // choose forward and backward algorithms + workspace(s)
     CUDNN_CHECK(cudnnGetConvolutionForwardAlgorithm(handle_[0],
